@@ -16,6 +16,15 @@ def db_read_all_todos() -> list[Todo]:
 
 
 def db_create_new_todo_obj(todo: Todo, db_session: Session) -> Todo:
+    """Records 'Todo' object to provided database session.
+
+    Args:
+        todo (Todo): 'Todo' object.
+        db_session (Session): database session.
+
+    Returns:
+        Todo: created 'Todo' object.
+    """
     db_session.add(todo)
     db_session.commit()
     return todo

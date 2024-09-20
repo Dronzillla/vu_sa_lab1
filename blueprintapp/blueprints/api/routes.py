@@ -5,7 +5,6 @@ from blueprintapp.blueprints.todos.db_operations import (
     db_read_all_todos,
     db_read_todo_by_tid,
     db_delete_todo,
-    db_create_new_todo,
     db_create_new_todo_obj,
 )
 from blueprintapp.blueprints.api.db_operations import db_read_todo_by_tid_or_404
@@ -53,9 +52,13 @@ def get_todo(tid):
 @api.route("/todos", methods=["POST"])
 def create_todo():
     data = request.get_json()
-    if not data or "title" not in data:
-        abort(400, description="Title is required")
 
+    # title and duedate in models can't be null
+    if not data or "title" not in data or "duedate" not in data:
+        abort(400, description="Title and due date are required")
+
+    # TODO title validation?
+    # TODO date validation?
     new_todo = Todo(
         title=data.get("title"),
         description=data.get("description"),

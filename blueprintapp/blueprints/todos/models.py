@@ -7,8 +7,8 @@ class Todo(db.Model):
     tid = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
-    duedate = db.Column(db.DateTime)
-    done = db.Column(db.Boolean, nullable=False)
+    duedate = db.Column(db.DateTime, nullable=False)
+    done = db.Column(db.Boolean)
 
     def __repr__(self):
         return f"Title: {self.title}, Description: {self.description}, Due Date: {self.duedate}, Done: {self.done}"
