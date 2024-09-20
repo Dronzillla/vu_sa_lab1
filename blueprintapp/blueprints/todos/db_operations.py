@@ -1,4 +1,5 @@
 from blueprintapp.app import db
+from sqlalchemy.orm import Session
 from blueprintapp.blueprints.todos.models import Todo
 from datetime import datetime
 from typing import Optional
@@ -12,6 +13,12 @@ def db_read_all_todos() -> list[Todo]:
     """
     todos = Todo.query.all()
     return todos
+
+
+def db_create_new_todo_obj(todo: Todo, db_session: Session) -> Todo:
+    db_session.add(todo)
+    db_session.commit()
+    return todo
 
 
 def db_create_new_todo(title: str, description: str, duedate: datetime) -> Todo:
