@@ -10,6 +10,7 @@ from wtforms import (
 )
 from wtforms.validators import DataRequired, Length
 from datetime import date
+from blueprintapp.utilities.validators import validate_title, validate_duedate
 
 
 class BaseTodoForm(FlaskForm):
@@ -17,15 +18,11 @@ class BaseTodoForm(FlaskForm):
     description = StringField("Description")
     duedate = DateField("Due date", validators=[DataRequired()])
 
-    # Validation for title
     def validate_title(self, field):
-        if field.data.isdigit():
-            raise ValidationError("Title cannot contain only numbers.")
+        validate_title(field.data)
 
-    # Date cannot be changed to past dates
     def validate_duedate(self, field):
-        if field.data < date.today():
-            raise ValidationError("Due date cannot be in the past.")
+        validate_duedate(field.data)
 
 
 class TodoForm(BaseTodoForm):

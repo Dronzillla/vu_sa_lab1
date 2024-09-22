@@ -6,8 +6,11 @@ from blueprintapp.blueprints.todos.db_operations import (
     db_read_todo_by_tid,
     db_delete_todo,
     db_create_new_todo_obj,
+    db_update_todo,
 )
 from blueprintapp.blueprints.api.db_operations import db_read_todo_by_tid_or_404
+from blueprintapp.utilities.validators import validate_title, validate_duedate
+from wtforms import ValidationError
 from datetime import datetime
 
 api = Blueprint("api", __name__, template_folder="templates")
@@ -76,18 +79,40 @@ def create_todo():
 # Update an existing todo
 @api.route("/todos/<int:tid>", methods=["PUT"])
 def update_todo(tid):
-    todo = Todo.query.get_or_404(tid)
+    todo = db_read_todo_by_tid_or_404(tid=tid)
     data = request.get_json()
 
-    todo.title = data.get("title", todo.title)
-    todo.description = data.get("description", todo.description)
-    if "duedate" in data:
-        todo.duedate = (
-            datetime.fromisoformat(data["duedate"]) if data["duedate"] else None
-        )
-    todo.done = data.get("done", todo.done)
+    title = data.get("title")
+    # title must be provided in the request
+    if not title:
+        return jsonify({"error": "Title is required"}), 400
+    # title must not be comprised of only numbers
+    try:
+        validate_title(title)
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
 
-    db.session.commit()
+    duedate_str = data.get("duedate")
+    # duedate must be provided in the request
+    if not duedate_str:
+        return jsonify({"error": "Due date is required"}), 400
+
+    # duedate must not be in the past and in valid date format
+    try:
+        duedate = datetime.fromisoformat(duedate_str).date()
+        validate_duedate(duedate)
+    except ValueError:
+        return jsonify({"error": "Due date must be a valid ISO format date"}), 400
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
+
+    db_update_todo(
+        todo=todo,
+        title=title,
+        description=data.get("description"),
+        duedate=duedate,
+        done=data.get("done"),
+    )
     return jsonify({"message": f"Todo {tid} updated"}), 200
 
 
