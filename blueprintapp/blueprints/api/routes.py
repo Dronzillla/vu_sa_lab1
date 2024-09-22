@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, abort
+from flask import Blueprint, jsonify, request
 from blueprintapp.app import db
 from blueprintapp.blueprints.todos.models import Todo
 from blueprintapp.blueprints.todos.db_operations import (
@@ -56,23 +56,38 @@ def get_todo(tid):
 def create_todo():
     data = request.get_json()
 
-    # title and duedate in models can't be null
-    if not data or "title" not in data or "duedate" not in data:
-        abort(400, description="Title and due date are required")
+    title = data.get("title")
+    # title must be provided in the request
+    if not title:
+        return jsonify({"error": "Title is required"}), 400
+    # title must not be comprised of only numbers
+    try:
+        validate_title(title)
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
 
-    # TODO title validation?
-    # TODO date validation?
+    duedate_str = data.get("duedate")
+    # duedate must be provided in the request
+    if not duedate_str:
+        return jsonify({"error": "Due date is required"}), 400
+    # duedate must not be in the past and in valid date format
+    try:
+        duedate = datetime.fromisoformat(duedate_str).date()
+        validate_duedate(duedate)
+    except ValueError:
+        return jsonify({"error": "Due date must be a valid ISO format date"}), 400
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
+
+    # Create the new todo object
     new_todo = Todo(
-        title=data.get("title"),
+        title=title,
         description=data.get("description"),
-        duedate=(
-            datetime.fromisoformat(data["duedate"]) if data.get("duedate") else None
-        ),
+        duedate=duedate,
         done=data.get("done", False),
     )
 
     db_create_new_todo_obj(todo=new_todo, db_session=db.session)
-
     return jsonify({"message": "Todo created", "tid": new_todo.tid}), 201
 
 
@@ -116,6 +131,7 @@ def update_todo(tid):
     return jsonify({"message": f"Todo {tid} updated"}), 200
 
 
+# Delete an existing todo
 @api.route("/todos/<int:tid>", methods=["DELETE"])
 def delete_todo(tid):
     todo = db_read_todo_by_tid(tid=tid)
