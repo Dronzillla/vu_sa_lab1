@@ -8,7 +8,6 @@ from blueprintapp.blueprints.todos.db_operations import (
     db_create_new_todo_obj,
     db_update_todo,
 )
-from blueprintapp.blueprints.api.db_operations import db_read_todo_by_tid_or_404
 from blueprintapp.utilities.validators import validate_title, validate_duedate
 from wtforms import ValidationError
 from datetime import datetime
@@ -36,7 +35,9 @@ def get_todos():
 # Get a specific todo by id
 @api.route("/todos/<int:tid>", methods=["GET"])
 def get_todo(tid):
-    todo = db_read_todo_by_tid_or_404(tid=tid)
+    todo = db_read_todo_by_tid(tid=tid)
+    if todo == None:
+        return jsonify({"error": "Record not found"}), 404
     return (
         jsonify(
             {
@@ -94,7 +95,11 @@ def create_todo():
 # Update an existing todo
 @api.route("/todos/<int:tid>", methods=["PUT"])
 def update_todo(tid):
-    todo = db_read_todo_by_tid_or_404(tid=tid)
+    # todo = db_read_todo_by_tid_or_404(tid=tid)
+    todo = db_read_todo_by_tid(tid=tid)
+    if todo == None:
+        return jsonify({"error": "Record not found"}), 404
+
     data = request.get_json()
 
     title = data.get("title")
