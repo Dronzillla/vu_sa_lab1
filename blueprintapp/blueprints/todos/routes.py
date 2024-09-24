@@ -82,28 +82,36 @@ def delete(tid):
 @todos.route("/update/<int:tid>", methods=["GET", "POST"])
 def update(tid):
     form = UpdateForm()
-    # Check if todo record exist
+    # Check if todo record exists
     todo = db_read_todo_by_tid(tid=tid)
     if todo is None:
         return "Task not found", 404
 
     if form.validate_on_submit():  # POST request
-        db_update_todo(
-            todo=todo,
-            title=form.title.data.lower(),
-            description=form.description.data.lower(),
-            duedate=form.duedate.data,
-            done=form.done.data,
+        # Collect data from the form
+        data = {
+            "title": form.title.data,
+            "description": form.description.data,
+            "duedate": form.duedate.data.isoformat(),
+            "done": form.done.data,
+        }
+
+        # Call the update API
+        response = requests.put(
+            f"{url_for('api.update_todo', tid=tid, _external=True)}", json=data
         )
-        flash(
-            "Task was updated.",
-        )
-        # Redirect to see all todos.
-        return redirect(url_for("todos.index"))
+
+        if response.status_code == 200:
+            flash("Task was updated.")
+            # Redirect to see all todos.
+            return redirect(url_for("todos.index"))
+        else:
+            error_message = response.json().get("error", "An error occurred.")
+            flash(f"Failed to update task: {error_message}")
 
     # Fill form with current database data
     form.title.data = todo.title
     form.description.data = todo.description
     form.duedate.data = todo.duedate
     form.done.data = todo.done
-    return render_template("todos/update.html", form=form)  # GET request
+    return render_template("todos/update.html", form=form)
