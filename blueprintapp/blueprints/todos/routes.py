@@ -15,7 +15,7 @@ todos = Blueprint("todos", __name__, template_folder="templates")
 
 
 @todos.route("/")
-def index():  # Controller action
+def index():
     # Call the API to fetch all todos
     response = requests.get(url=url_for("api.get_todos", _external=True))
 
@@ -25,7 +25,7 @@ def index():  # Controller action
         # Convert 'duedate' to a datetime object for sorting
         for todo in todos:
             todo["duedate"] = datetime.fromisoformat(todo["duedate"]).date()
-        # # Sort todos by 'duedate'
+        # Sort todos by 'duedate'
         sorted_todos = sorted(todos, key=lambda todo: todo["duedate"])
 
     else:

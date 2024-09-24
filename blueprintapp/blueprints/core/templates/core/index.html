@@ -4,9 +4,7 @@
 <body>
     <section class="container">
 
-        <h3>Laboratory assignment 1.A</h3>
-
-        <h4>Requirements</h4>
+        <h4>Laboratory assignment 1.A Requirements</h4>
         <ul>
             <li>Create MVC, MVU or MVVM architectural pattern driven web site</li>
             <li>Site should allow creating, editing, viewing and deleting of at least one entity that is the main focus of business aplication (no persistence required)</li>
@@ -15,13 +13,31 @@
             <li>Demonstrate usage of DI+IOC</li>
         </ul>
 
+        <h4>Laboratory assignment 1.B Requirements</h4>
+        <ul>
+            <li>Create Web service as API</li>
+            <li>Demonstrate 1 business entity creation, reading, editing, deleting, use 4 HTTP verbs (no persistence required)</li>
+            <li>Business entity should contain at least 4 editable properties</li>
+            <li>Unit tests for all API public contracts (100% coverage)</li>
+        </ul>
+        
+        <h4>Laboratory assignment 1.C Requirements</h4>
+        <ul>
+            <li>Implement DB layer by using ORM or plain SQL with Repository pattern</li>
+            <li>Demonstrate 1 business entity creation, reading, editing, deleting</li>
+            <li>Business entity should contain at least 4 editable properties</li>
+            <li>Integrate 1.A, 1.B and 1.C alltogether (website uses API to manipulate data, where API uses DB layer to manipulate data in database)</li>
+        </ul>
+            
+
         <h4>Solution</h4>
         <ul>
             <li>I have created a web application using the MVC architectural pattern and the Flask web framework.</li>
             <li>The application allows for the creation, editing, viewing, and deletion of tasks. </li>
             <li>Four task properties (title, description, due date, and completion status) can be edited. </li>
-            <li>Validation when creating and updating task properties is mostly handled through forms. Title and due date cannot be blank. Title cannot be only digits. Due date cannot be in the past.</li>
+            <li>Data validation rules: Title and due date cannot be blank. Title cannot be only digits. Task due date cannot be in the past.</li>
             <li>in app.py SQLAlchemy() instance (db) is initialized without being tied to any specific app. Later, in the create_app function, the app instance is passed to db.init_app(app), injecting the Flask application context into the db instance. This follows the dependency injection pattern by delaying the configuration of the database until the app is created. </li>
+            <li>TODO update solution</li>
         </ul>
 
         <h4>Author</h4>
