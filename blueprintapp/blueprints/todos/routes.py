@@ -1,11 +1,5 @@
-from flask import render_template, request, flash, redirect, url_for, Blueprint
-from blueprintapp.blueprints.todos.db_operations import (
-    db_read_all_todos,
-    db_create_new_todo,
-    db_delete_todo,
-    db_read_todo_by_tid,
-    db_update_todo,
-)
+from flask import render_template, flash, redirect, url_for, Blueprint
+from blueprintapp.blueprints.api.db_operations import db_read_todo_by_tid
 from blueprintapp.blueprints.todos.forms import TodoForm, UpdateForm
 from datetime import datetime
 import requests

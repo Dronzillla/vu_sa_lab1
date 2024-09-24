@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from blueprintapp.app import db
-from blueprintapp.blueprints.todos.models import Todo
-from blueprintapp.blueprints.todos.db_operations import (
+from blueprintapp.blueprints.api.models import Todo
+from blueprintapp.blueprints.api.db_operations import (
     db_read_all_todos,
     db_read_todo_by_tid,
     db_delete_todo,
