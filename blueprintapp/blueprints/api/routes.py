@@ -140,5 +140,7 @@ def update_todo(tid):
 @api.route("/todos/<int:tid>", methods=["DELETE"])
 def delete_todo(tid):
     todo = db_read_todo_by_tid(tid=tid)
+    if todo == None:
+        return jsonify({"error": "Record not found"}), 404
     db_delete_todo(todo=todo)
     return jsonify({"message": f"Todo {tid} deleted"}), 200

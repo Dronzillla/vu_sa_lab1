@@ -53,13 +53,20 @@ def create():
 
 @todos.route("/delete/<int:tid>")
 def delete(tid):
-    # Get todo object
-    todo = db_read_todo_by_tid(tid=tid)
-    if todo is None:
-        return "Task not found", 404
-    # Try to delete todo task
-    db_delete_todo(todo=todo)
-    # Redirect to dashboard
+    # Call the API to delete the todo
+    response = requests.delete(url=url_for("api.delete_todo", tid=tid, _external=True))
+
+    print(response.content, response.status_code)
+
+    # Handle the response from the API
+    if response.status_code == 404:
+        flash("Task not found", "error")
+        return redirect(url_for("todos.index"))
+    elif response.status_code == 200:
+        flash(f"Todo {tid} deleted", "success")
+    else:
+        flash("Something went wrong. Could not delete the task.", "error")
+
     return redirect(url_for("todos.index"))
 
 
