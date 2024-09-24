@@ -7,6 +7,7 @@ from blueprintapp.blueprints.todos.db_operations import (
     db_update_todo,
 )
 from blueprintapp.blueprints.todos.forms import TodoForm, UpdateForm
+import requests
 
 
 todos = Blueprint("todos", __name__, template_folder="templates")
@@ -27,18 +28,27 @@ def index():  # Controller action
 def create():
     form = TodoForm()
     if form.validate_on_submit():  # POST request
-        # Create new todo
-        db_create_new_todo(
-            title=form.title.data.lower(),
-            description=form.description.data.lower(),
-            duedate=form.duedate.data,
+        # Collect data from the form
+        todo_data = {
+            "title": form.title.data,
+            "description": form.description.data,
+            "duedate": form.duedate.data.isoformat(),  # Convert date to ISO string
+        }
+
+        # Call the API to create the todo
+        response = requests.post(
+            url_for("api.create_todo", _external=True), json=todo_data
         )
-        flash(
-            "New task was created. ",
-        )
-        # Redirect to see all todos that was created.
-        return redirect(url_for("todos.index"))
-    return render_template("todos/create.html", form=form)  # GET request
+
+        if response.status_code == 201:
+            flash("New task was created.")
+            return redirect(url_for("todos.index"))
+        else:
+            # Display error messages from API response
+            flash(f"Error: {response.json().get('error', 'Unknown error occurred.')}")
+
+    # Render form on GET request or if validation fails
+    return render_template("todos/create.html", form=form)
 
 
 @todos.route("/delete/<int:tid>")
