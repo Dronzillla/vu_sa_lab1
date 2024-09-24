@@ -7,21 +7,32 @@ from blueprintapp.blueprints.todos.db_operations import (
     db_update_todo,
 )
 from blueprintapp.blueprints.todos.forms import TodoForm, UpdateForm
+from datetime import datetime
 import requests
 
 
 todos = Blueprint("todos", __name__, template_folder="templates")
 
 
-# Model-View-Controller Pattern
-
-
 @todos.route("/")
 def index():  # Controller action
-    todos = db_read_all_todos()  # Model
-    # Sort todos by due date
-    sorted_todos = sorted(todos, key=lambda todo: todo.duedate)
-    return render_template("todos/index.html", todos=sorted_todos)  # View
+    # Call the API to fetch all todos
+    response = requests.get(url=url_for("api.get_todos", _external=True))
+
+    # Handle the response from the API
+    if response.status_code == 200:
+        todos = response.json()
+        # Convert 'duedate' to a datetime object for sorting
+        for todo in todos:
+            todo["duedate"] = datetime.fromisoformat(todo["duedate"]).date()
+        # # Sort todos by 'duedate'
+        sorted_todos = sorted(todos, key=lambda todo: todo["duedate"])
+
+    else:
+        flash("Unable to fetch tasks.", "error")
+        sorted_todos = []
+
+    return render_template("todos/index.html", todos=sorted_todos)
 
 
 @todos.route("/create", methods=["GET", "POST"])
@@ -32,7 +43,7 @@ def create():
         todo_data = {
             "title": form.title.data,
             "description": form.description.data,
-            "duedate": form.duedate.data.isoformat(),  # Convert date to ISO string
+            "duedate": form.duedate.data.isoformat(),
         }
 
         # Call the API to create the todo
@@ -55,8 +66,6 @@ def create():
 def delete(tid):
     # Call the API to delete the todo
     response = requests.delete(url=url_for("api.delete_todo", tid=tid, _external=True))
-
-    print(response.content, response.status_code)
 
     # Handle the response from the API
     if response.status_code == 404:

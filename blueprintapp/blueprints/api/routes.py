@@ -24,7 +24,7 @@ def get_todos():
             "tid": todo.tid,
             "title": todo.title,
             "description": todo.description,
-            "duedate": todo.duedate,
+            "duedate": todo.duedate.isoformat(),
             "done": todo.done,
         }
         for todo in todos
@@ -44,7 +44,7 @@ def get_todo(tid):
                 "tid": todo.tid,
                 "title": todo.title,
                 "description": todo.description,
-                "duedate": todo.duedate,
+                "duedate": todo.duedate.isoformat(),
                 "done": todo.done,
             }
         ),
