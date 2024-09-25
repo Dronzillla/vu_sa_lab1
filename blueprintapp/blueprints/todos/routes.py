@@ -76,8 +76,8 @@ def delete(tid):
 def update(tid):
     form = UpdateForm()
     # Check if todo record exists by calling the get API
-    response = requests.get(f"{url_for('api.get_todo', tid=tid, _external=True)}")
-    if response.status_code != 200:
+    todo_response = requests.get(f"{url_for('api.get_todo', tid=tid, _external=True)}")
+    if todo_response.status_code != 200:
         return "Task not found", 404
 
     if form.validate_on_submit():  # POST request
@@ -103,8 +103,8 @@ def update(tid):
             flash(f"Failed to update task: {error_message}")
 
     # Fill form with current database data
-    form.title.data = todo.title
-    form.description.data = todo.description
-    form.duedate.data = todo.duedate
-    form.done.data = todo.done
+    form.title.data = todo_response.get("title")
+    form.description.data = todo_response.get("description")
+    form.duedate.data = todo_response.get("duedate")
+    form.done.data = todo_response.get("done")
     return render_template("todos/update.html", form=form)
