@@ -1,5 +1,4 @@
 from flask import render_template, flash, redirect, url_for, Blueprint
-from blueprintapp.blueprints.api.db_operations import db_read_todo_by_tid
 from blueprintapp.blueprints.todos.forms import TodoForm, UpdateForm
 from datetime import datetime
 import requests
@@ -76,9 +75,9 @@ def delete(tid):
 @todos.route("/update/<int:tid>", methods=["GET", "POST"])
 def update(tid):
     form = UpdateForm()
-    # Check if todo record exists
-    todo = db_read_todo_by_tid(tid=tid)
-    if todo is None:
+    # Check if todo record exists by calling the get API
+    response = requests.get(f"{url_for('api.get_todo', tid=tid, _external=True)}")
+    if response.status_code != 200:
         return "Task not found", 404
 
     if form.validate_on_submit():  # POST request
