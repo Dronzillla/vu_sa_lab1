@@ -8,13 +8,12 @@ from blueprintapp.blueprints.api.db_operations import (
     db_create_new_todo_obj,
     db_update_todo,
 )
-from blueprintapp.utilities.validators import validate_title, validate_duedate
 from blueprintapp.blueprints.api.utilities import (
+    valid_title_and_duedate,
     jsend_success,
     jsend_fail,
 )
-from wtforms import ValidationError
-from datetime import datetime
+
 
 api = Blueprint("api", __name__, template_folder="templates")
 
@@ -61,37 +60,15 @@ def get_todo(tid):
 @api.route("/todos", methods=["POST"])
 def create_todo():
     data = request.get_json()
-
-    title = data.get("title")
-    # title must be provided in the request
-    if not title:
-        return jsend_fail(data_key="title", data_value="title is required")
-    # title must not be comprised of only numbers
-    try:
-        validate_title(title)
-    except ValidationError as e:
-        return jsend_fail(data_key="title", data_value=f"{str(e)}")
-
-    duedate_str = data.get("duedate")
-    # duedate must be provided in the request
-    if not duedate_str:
-        return jsend_fail(data_key="duedate", data_value="duedate is required")
-    # duedate must not be in the past and in valid date format
-    try:
-        duedate = datetime.fromisoformat(duedate_str).date()
-        validate_duedate(duedate)
-    except ValueError:
-        return jsend_fail(
-            data_key="duedate", data_value="due date must be a valid ISO format date"
-        )
-    except ValidationError as e:
-        return jsend_fail(data_key="duedate", data_value=f"{str(e)}")
+    response = valid_title_and_duedate(data=data)
+    if type(response) is not dict:
+        return response
 
     # Create the new todo object
     new_todo = Todo(
-        title=title,
+        title=response.get("title"),
         description=data.get("description"),
-        duedate=duedate,
+        duedate=response.get("duedate"),
         done=data.get("done", False),
     )
     db_create_new_todo_obj(todo=new_todo, db_session=db.session)
@@ -112,37 +89,15 @@ def update_todo(tid):
         )
 
     data = request.get_json()
-
-    title = data.get("title")
-    # title must be provided in the request
-    if not title:
-        return jsend_fail(data_key="title", data_value="title is required")
-    # title must not be comprised of only numbers
-    try:
-        validate_title(title)
-    except ValidationError as e:
-        return jsend_fail(data_key="title", data_value=f"{str(e)}")
-
-    duedate_str = data.get("duedate")
-    # duedate must be provided in the request
-    if not duedate_str:
-        return jsend_fail(data_key="duedate", data_value="duedate is required")
-    # duedate must not be in the past and in valid date format
-    try:
-        duedate = datetime.fromisoformat(duedate_str).date()
-        validate_duedate(duedate)
-    except ValueError:
-        return jsend_fail(
-            data_key="duedate", data_value="due date must be a valid ISO format date"
-        )
-    except ValidationError as e:
-        return jsend_fail(data_key="duedate", data_value=f"{str(e)}")
+    response = valid_title_and_duedate(data=data)
+    if type(response) is not dict:
+        return response
 
     db_update_todo(
         todo=todo,
-        title=title,
+        title=response.get("title"),
         description=data.get("description"),
-        duedate=duedate,
+        duedate=response.get("duedate"),
         done=data.get("done"),
     )
     # TODO should update follow delete patern?

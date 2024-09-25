@@ -1,5 +1,8 @@
 from flask import jsonify, Response
-from typing import Union
+from typing import Union, Optional
+from blueprintapp.utilities.validators import validate_title, validate_duedate
+from wtforms import ValidationError
+from datetime import datetime
 
 
 def jsend_success(
@@ -54,3 +57,33 @@ def jsend_error(message, code=None, data=None) -> Response:
     if data is not None:
         response["data"] = data
     return jsonify(response), code
+
+
+def valid_title_and_duedate(data) -> Union[dict, Response]:
+    # TODO add type hinting and docstring generation
+    title = data.get("title")
+    # title must be provided in the request
+    if not title:
+        return jsend_fail(data_key="title", data_value="title is required")
+    # title must not be comprised of only numbers
+    try:
+        validate_title(title)
+    except ValidationError as e:
+        return jsend_fail(data_key="title", data_value=f"{str(e)}")
+
+    duedate_str = data.get("duedate")
+    # duedate must be provided in the request
+    if not duedate_str:
+        return jsend_fail(data_key="duedate", data_value="duedate is required")
+    # duedate must not be in the past and in valid date format
+    try:
+        duedate = datetime.fromisoformat(duedate_str).date()
+        validate_duedate(duedate)
+    except ValueError:
+        return jsend_fail(
+            data_key="duedate", data_value="due date must be a valid ISO format date"
+        )
+    except ValidationError as e:
+        return jsend_fail(data_key="duedate", data_value=f"{str(e)}")
+
+    return {"title": title, "duedate": duedate}
