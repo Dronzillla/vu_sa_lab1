@@ -1,15 +1,11 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
-    DateTimeField,
     DateField,
-    DateTimeLocalField,
     SubmitField,
     BooleanField,
-    ValidationError,
 )
 from wtforms.validators import DataRequired, Length
-from datetime import date
 from blueprintapp.utilities.validators import validate_title, validate_duedate
 
 

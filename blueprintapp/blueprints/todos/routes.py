@@ -14,13 +14,12 @@ def index():
 
     # Handle the response from the API
     if response.status_code == 200:
-        todos = response.json()
+        todos = response.json().get("data").get("todos")
         # Convert 'duedate' to a datetime object for sorting
         for todo in todos:
             todo["duedate"] = datetime.fromisoformat(todo["duedate"]).date()
         # Sort todos by 'duedate'
         sorted_todos = sorted(todos, key=lambda todo: todo["duedate"])
-
     else:
         flash("Unable to fetch tasks.", "error")
         sorted_todos = []
@@ -77,6 +76,9 @@ def update(tid):
     form = UpdateForm()
     # Check if todo record exists by calling the get API
     todo_response = requests.get(f"{url_for('api.get_todo', tid=tid, _external=True)}")
+    todo_data = todo_response.json()
+    print(todo_data)
+
     if todo_response.status_code != 200:
         return "Task not found", 404
 
@@ -103,8 +105,9 @@ def update(tid):
             flash(f"Failed to update task: {error_message}")
 
     # Fill form with current database data
-    form.title.data = todo_response.get("title")
-    form.description.data = todo_response.get("description")
-    form.duedate.data = todo_response.get("duedate")
-    form.done.data = todo_response.get("done")
+    form.title.data = todo_data.get("data").get("todo").get("title")
+    form.description.data = todo_data.get("data").get("todo").get("description")
+    duedate_str = todo_data.get("data").get("todo").get("duedate")
+    form.duedate.data = datetime.strptime(duedate_str, "%Y-%m-%d")
+    form.done.data = todo_data.get("data").get("todo").get("done")
     return render_template("todos/update.html", form=form)
