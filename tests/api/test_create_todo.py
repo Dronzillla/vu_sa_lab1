@@ -1,6 +1,3 @@
-# pytest --cov=blueprintapp/blueprints/api
-
-
 import json
 
 

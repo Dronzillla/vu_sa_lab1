@@ -1,19 +1,20 @@
 # Laboratory assignment 1
+This is a small web application project using APIs that I completed while studying the "Software Systems Architecture and Design" course in the Master's program for Software Engineering at Vilnius University.
 
-## Laboratory assignment 1.A Requirements
+## Laboratory assignment 1.A requirements
 - Create MVC, MVU or MVVM architectural pattern driven web site
 - Site should allow creating, editing, viewing and deleting of at least one entity that is the main focus of business aplication (no persistence required)
 - Business entity should contain at least 4 editable properties
 - Implement validation for all editable properties in create and update scenarios
 - Demonstrate usage of DI+IOC
 
-## Laboratory assignment 1.B Requirements
+## Laboratory assignment 1.B requirements
 - Create Web service as API
 - Demonstrate 1 business entity creation, reading, editing, deleting, use 4 HTTP verbs (no persistence required)
 - Business entity should contain at least 4 editable properties
 - Unit tests for all API public contracts (100% coverage)
 
-## Laboratory assignment 1.C Requirements
+## Laboratory assignment 1.C requirements
 - Implement DB layer by using ORM or plain SQL with Repository pattern
 - Demonstrate 1 business entity creation, reading, editing, deleting
 - Business entity should contain at least 4 editable properties
@@ -29,7 +30,7 @@
 - The front end is built using the Jinja2 templating engine, without any additional front-end libraries.
 - Unit tests for all API routes were implemented using pytest, achieving 100% test coverage.
 
-## How to use this Project locally
+## How to run this project locally
 1. **Create folder for your project (you can use any name)**:
     ```sh
     mkdir project_api
@@ -73,9 +74,9 @@ To run tests or generate a test coverage report, change the current working dire
     ```sh
     pytest
     ```
-2. **To generate test coverage report**:
+2. **To generate test coverage report for api bp**:
     ```sh
-    pytest --cov=blueprintapp
+    pytest --cov=blueprintapp/blueprints/api
     ```
 
 ## Credits
