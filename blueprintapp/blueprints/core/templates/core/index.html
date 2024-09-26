@@ -32,12 +32,14 @@
 
         <h4>Solution</h4>
         <ul>
-            <li>I have created a web application using the MVC architectural pattern and the Flask web framework.</li>
-            <li>The application allows for the creation, editing, viewing, and deletion of tasks. </li>
-            <li>Four task properties (title, description, due date, and completion status) can be edited. </li>
-            <li>Data validation rules: Title and due date cannot be blank. Title cannot be only digits. Task due date cannot be in the past.</li>
-            <li>in app.py SQLAlchemy() instance (db) is initialized without being tied to any specific app. Later, in the create_app function, the app instance is passed to db.init_app(app), injecting the Flask application context into the db instance. This follows the dependency injection pattern by delaying the configuration of the database until the app is created. </li>
-            <li>TODO update solution</li>
+            <li>I developed a web application using the MVC architectural pattern and the Flask web framework.</li>
+            <li>The application supports creating, editing, viewing, and deleting tasks.</li>
+            <li>Four task properties can be modified: title, description, due date, and completion status.</li>
+            <li>Data validation rules include: the title and due date cannot be blank, the title must contain non-numeric characters, and the due date cannot be in the past.</li>
+            <li>The database layer is implemented using SQLAlchemy ORM.</li>
+            <li>The application leverages an API to perform CRUD operations, with API routes also used on the front end.</li>
+            <li>The front end is built using the Jinja2 templating engine, without any additional front-end libraries.</li>
+            <li>Unit tests for all API routes were implemented using pytest, achieving 100% test coverage.</li>
         </ul>
 
         <h4>Author</h4>

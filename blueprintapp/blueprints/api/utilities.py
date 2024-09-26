@@ -1,5 +1,5 @@
 from flask import jsonify, Response
-from typing import Union, Optional
+from typing import Union
 from blueprintapp.utilities.validators import validate_title, validate_duedate
 from wtforms import ValidationError
 from datetime import datetime
@@ -49,18 +49,27 @@ def jsend_fail(data_key: str, data_value: str, status_code: int = 400) -> Respon
     return jsonify({"status": "fail", "data": {data_key: data_value}}), status_code
 
 
-def jsend_error(message, code=None, data=None) -> Response:
-    # TODO What is the use case of jsend_error?
-    response = {"status": "error", "message": message}
-    if code is not None:
-        response["code"] = code
-    if data is not None:
-        response["data"] = data
-    return jsonify(response), code
+def jsend_error() -> Response:
+    # TODO integrate errors?
+    pass
 
 
 def valid_title_and_duedate(data) -> Union[dict, Response]:
-    # TODO add type hinting and docstring generation
+    """
+    Validates the 'title' and 'duedate' fields from the provided data.
+
+    Args:
+        data (dict): A dictionary containing the 'title' and 'duedate' fields to validate.
+
+    Returns:
+        Union[dict, Response]:
+            - If validation succeeds, returns a dictionary with 'title' and 'duedate'.
+            - If validation fails, returns a JSend 'fail' response indicating the validation error.
+
+    Validation Steps:
+        - 'title' must be present and not consist solely of numbers.
+        - 'duedate' must be present, in ISO format, and cannot be in the past.
+    """
     title = data.get("title")
     # title must be provided in the request
     if not title:

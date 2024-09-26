@@ -71,9 +71,9 @@ def create_todo():
         duedate=response.get("duedate"),
         done=data.get("done", False),
     )
+    # TODO dependency injection?
     db_create_new_todo_obj(todo=new_todo, db_session=db.session)
-    # TODO should success follow delete patern?
-    # Maybe returning newly created todo object in the response?
+    # TODO success follow delete patern? Maybe returning newly created todo object in the response?
     return jsend_success(status_code=201)
 
 
